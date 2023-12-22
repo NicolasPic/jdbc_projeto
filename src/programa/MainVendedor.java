@@ -9,7 +9,7 @@ import dao.VendedorDao;
 import entidades.Departamento;
 import entidades.Vendedor;
 
-public class Main {
+public class MainVendedor {
 
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);

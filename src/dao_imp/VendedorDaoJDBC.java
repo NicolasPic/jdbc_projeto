@@ -16,19 +16,23 @@ import db.DbException;
 import entidades.Departamento;
 import entidades.Vendedor;
 
-public class VendedorDaoJDBC implements VendedorDao {
+public class VendedorDaoJDBC implements VendedorDao 
+{
 
 	private Connection conn;
 
-	public VendedorDaoJDBC(Connection conn) {
+	public VendedorDaoJDBC(Connection conn) 
+	{
 		this.conn = conn;
 	}
 
 	@Override
-	public void inserir(Vendedor obj) {
+	public void inserir(Vendedor obj) 
+{
 		
 		PreparedStatement st = null;
-		try {
+		try 
+		{
 			st = conn.prepareStatement("INSERT INTO seller\r\n"
 					+ "		(Name, Email, BirthDate, BaseSalary, DepartmentId)\r\n"
 					+ "		VALUES\r\n"
@@ -43,29 +47,38 @@ public class VendedorDaoJDBC implements VendedorDao {
 			
 			int rws = st.executeUpdate();
 			
-			if(rws > 0) {
+			if(rws > 0) 
+			{
 				ResultSet rs = st.getGeneratedKeys();
-				if (rs.next()) {
+				if (rs.next()) 
+				{
 					int id = rs.getInt(1);
 					obj.setId(id);
 				}
 				DB.closeResult(rs);
-			}else {
+			}
+			else 
+			{
 				throw new DbException("Error não esperado");
 			}
-		}catch(SQLException e) {
+		}
+		catch(SQLException e) 
+		{
 			throw new DbException(e.getMessage());
 		}
-		finally {
+		finally 
+		{
 			DB.closeStatement(st);
 		}
 	
 	}
 
 	@Override
-	public void update(Vendedor obj) {
+	public void update(Vendedor obj) 
+	{
 		PreparedStatement st = null;
-		try {
+		try 
+		{
 			st = conn.prepareStatement("UPDATE seller\r\n"
 					+ "SET Name = ?, Email = ?, BirthDate = ?, BaseSalary = ?, DepartmentId = ?\r\n"
 					+ "WHERE Id = ?");
@@ -79,39 +92,48 @@ public class VendedorDaoJDBC implements VendedorDao {
 			st.executeUpdate();
 	
 
-		}catch(SQLException e) {
+		}
+		catch(SQLException e) 
+		{
 			throw new DbException(e.getMessage());
 		}
-		finally {
+		finally 
+		{
 			DB.closeStatement(st);
 		}
 
 	}
 
 	@Override
-	public void deletePorId(Integer id) {
+	public void deletePorId(Integer id) 
+    {
 		PreparedStatement st = null;
-		try {
+		try 
+		{
 			st = conn.prepareStatement("DELETE FROM seller\r\n"
 					+ "WHERE Id = ?");
 			st.setInt(1, id);
 			
 			st.executeUpdate();
 		}
-		catch (SQLException e) {
+		catch (SQLException e) 
+		{
 			throw new DbException(e.getMessage());
 		}
-		 finally {
+		 finally 
+		 {
 				DB.closeStatement(st);
 		 }
 	}
 
 	@Override
-	public Vendedor achePorId(Integer id) {
+	public Vendedor achePorId(Integer id) 
+	{
 		PreparedStatement st = null;
 		ResultSet rs = null;
 
-		try {
+		try 
+		{
 			st = conn.prepareStatement(
 					"SELECT seller.*,department.Name as DepName\r\n" + "FROM seller INNER JOIN department\r\n"
 							+ "ON seller.DepartmentId = department.Id\r\n" + "WHERE seller.Id = ?");
@@ -127,16 +149,21 @@ public class VendedorDaoJDBC implements VendedorDao {
 			}
 			return null;
 
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+        {
 			throw new DbException(e.getMessage());
-		} finally {
+		} 
+		finally 
+		{
 			DB.closeStatement(st);
 			DB.closeResult(rs);
 		}
 
 	}
 
-	private Vendedor instanciarVendedor(ResultSet rs, Departamento dep) throws SQLException {
+	private Vendedor instanciarVendedor(ResultSet rs, Departamento dep) throws SQLException 
+	{
 		Vendedor obj = new Vendedor();
 		obj.setId(rs.getInt("Id"));
 		obj.setNome(rs.getString("Name"));
@@ -147,7 +174,8 @@ public class VendedorDaoJDBC implements VendedorDao {
 		return obj;
 	}
 
-	private Departamento instanciarDepartamento(ResultSet rs) throws SQLException {
+	private Departamento instanciarDepartamento(ResultSet rs) throws SQLException 
+	{
 		Departamento dep = new Departamento();
 		dep.setId(rs.getInt("DepartmentId"));
 		dep.setNome(rs.getString("DepName"));
@@ -155,12 +183,14 @@ public class VendedorDaoJDBC implements VendedorDao {
 	}
 
 	@Override
-	public List<Vendedor> econtreTodos() {
+	public List<Vendedor> econtreTodos() 
+	{
 
 			PreparedStatement st = null;
 			ResultSet rs = null;
 
-			try {
+			try 
+			{
 				st = conn.prepareStatement("SELECT seller.*,department.Name as DepName\r\n"
 						+ "FROM seller INNER JOIN department\r\n" + "ON seller.DepartmentId = department.Id\r\n"
 						+ "ORDER BY Name");
@@ -171,11 +201,13 @@ public class VendedorDaoJDBC implements VendedorDao {
 				List<Vendedor> list = new ArrayList<>();
 				Map<Integer, Departamento> map = new HashMap<>();
 
-				while (rs.next()) {
+				while (rs.next()) 
+				{
 
 					Departamento dep = map.get(rs.getInt("DepartmentId"));
 
-					if (dep == null) {
+					if (dep == null) 
+					{
 						dep = instanciarDepartamento(rs);
 						map.put(rs.getInt("DepartmentId"), dep);
 					}
@@ -184,20 +216,26 @@ public class VendedorDaoJDBC implements VendedorDao {
 				}
 				return list;
 
-			} catch (SQLException e) {
+			} 
+			catch (SQLException e) 
+			{
 				throw new DbException(e.getMessage());
-			} finally {
+			} 
+			finally 
+			{
 				DB.closeStatement(st);
 				DB.closeResult(rs);
 			}
 	}
 
 	@Override
-	public List<Vendedor> achePorDep(Departamento departament) {
+	public List<Vendedor> achePorDep(Departamento departament) 
+	{
 		PreparedStatement st = null;
 		ResultSet rs = null;
 
-		try {
+		try 
+		{
 			st = conn.prepareStatement("SELECT seller.*,department.Name as DepName\r\n"
 					+ "FROM seller INNER JOIN department\r\n" + "ON seller.DepartmentId = department.Id\r\n"
 					+ "WHERE DepartmentId = ?\r\n" + "ORDER BY Name");
@@ -209,11 +247,13 @@ public class VendedorDaoJDBC implements VendedorDao {
 			List<Vendedor> list = new ArrayList<>();
 			Map<Integer, Departamento> map = new HashMap<>();
 
-			while (rs.next()) {
+			while (rs.next()) 
+			{
 
 				Departamento dep = map.get(rs.getInt("DepartmentId"));
 
-				if (dep == null) {
+				if (dep == null) 
+				{
 					dep = instanciarDepartamento(rs);
 					map.put(rs.getInt("DepartmentId"), dep);
 				}
@@ -222,9 +262,13 @@ public class VendedorDaoJDBC implements VendedorDao {
 			}
 			return list;
 
-		} catch (SQLException e) {
+		} 
+		catch (SQLException e) 
+		{
 			throw new DbException(e.getMessage());
-		} finally {
+		} 
+		finally 
+		{
 			DB.closeStatement(st);
 			DB.closeResult(rs);
 		}
